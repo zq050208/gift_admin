@@ -1,0 +1,11 @@
+@import './variables.scss';
+@import './mixin.scss';
+ 
+html,
+body
+.app {
+  color: #333333;
+  background-color: $background-color;
+}
+ 
+.app-container{}

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1,user-scalable=no">
+  
+  <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+  <!-- <% for (var i in
+      htmlWebpackPlugin.options.cdn&&htmlWebpackPlugin.options.cdn.css) { %>
+      <link href="<%= htmlWebpackPlugin.options.cdn.css[i] %>" rel="preload" as="style" />
+      <link href="<%= htmlWebpackPlugin.options.cdn.css[i] %>" rel="stylesheet" />
+	  <% } %> -->
+  <title>小虎Hoo</title>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but <%= webpackConfig.name %> doesn't work properly without JavaScript enabled. Please enable it
+      to continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <!-- 使用CDN加速的JS文件，配置在vue.config.js下 -->
+  <!-- <% for (var i in
+      htmlWebpackPlugin.options.cdn&&htmlWebpackPlugin.options.cdn.js) { %>
+      <script src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"></script>
+    <% } %> -->
+  <!-- built files will be auto injected -->
+  <div style="display: none;">
+    <script type="text/javascript">document.write(unescape("%3Cspan id='cnzz_stat_icon_1278944851'%3E%3C/span%3E%3Cscript src='https://v1.cnzz.com/z_stat.php%3Fid%3D1278944851' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+</body>
+<!-- <script src="https://cdn.bootcss.com/vConsole/3.3.0/vconsole.min.js"></script> -->
+<script>
+  // var vConsole = new VConsole();
+  window.userID = 0
+
+  window.onload = function () {
+    checkLogin()
+  }
+  // 用户相关
+  function checkLogin() {
+    var userInfo
+    if (window.titi_js) {
+      userInfo = window.titi_js.callUserInfo()
+      if (userInfo) {
+        console.log('userInfo:' + userInfo)
+        userInfo = JSON.parse(userInfo)
+        window.userID = userInfo.user_id
+      } else {
+        window.userID = 0
+      }
+    } else {
+      window.userID = 0
+    }
+  }
+  console.log('userID:' + window.userID)
+  // test
+  //window.userID = 1
+
+  function isCarry() {
+    var browser = {
+      versions: function () {
+        var u = navigator.userAgent, app = navigator.appVersion;
+        return {         //移动终端浏览器版本信息
+          trident: u.indexOf('Trident') > -1, //IE内核
+          presto: u.indexOf('Presto') > -1, //opera内核
+          webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+          gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+          mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+          ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+          android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+          iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+          iPad: u.indexOf('iPad') > -1, //是否iPad
+          webApp: u.indexOf('Safari') == -1 //是否web应该程序，没有头部与底部
+        };
+      }(),
+      language: (navigator.browserLanguage || navigator.language).toLowerCase()
+    }
+    if (browser.versions.mobile) {
+      var ua = navigator.userAgent.toLowerCase();
+      if (ua.match(/MicroMessenger/i) == "micromessenger") {
+        window.location.href = 'https://h5.tinytiger.cn/web_app/new_information/download.html?appversion=2.2.2'
+      }
+      if (browser.versions.android) {
+        window.location.href = 'tt://titi:8888/from'
+        setTimeout(() => {
+          window.location.href = 'https://h5.tinytiger.cn/web_app/new_information/download.html?appversion=2.2.2'
+        }, 1000);
+      }
+      if (browser.versions.ios) {
+        window.location.href = 'https://h5.tinytiger.cn/web_app/new_information/download.html?appversion=2.2.2'
+      }
+    } else {
+      alert('暂不支持PC端')
+    }
+  }
+
+  // 跳转到游戏详情页
+  function clickInfo(id) {
+    if (id) {
+      console.log('clickInfoID:' + id)
+      if (window.titi_js) {
+        window.titi_js.callActivityPage('{"startType":4,"key":' + id + '}')
+      } else {
+        console.log('titi_js_not_callActivityPage')
+        isCarry()
+      }
+    }
+  }
+
+  // 跳转到登录
+  function callLogin() {
+    window.checkLogin()
+    var uid = window.userID
+    if (window.titi_js) {
+      if (uid == '' || !$uid || $uid == 0) {
+        window.titi_js.callLogin()
+      } else {
+        history.go(0)
+      }
+    } else {
+      console.log('titi_js_not_callLogin')
+      isCarry()
+      return fasle;
+    }
+  }
+
+  // 分享
+  function callShare(type, share_url, share_title, share_desc, share_image) {
+    // {"type":分享类型 0:微信 1:朋友圈 2:QQ 3:QQ空间,"share_url":分享链接,"share_title":分享标题,"share_desc":分享说明,"share_image":分享图片}
+    if(!share_desc){
+      share_desc = '暂无'
+    }
+    
+    var get = {
+      type: type,
+      share_url: share_url,
+      share_title: share_title,
+      share_desc: share_desc,
+      share_image: share_image
+    }
+    if (window.titi_js) {
+      console.log('share:' + JSON.stringify(get))
+      window.titi_js.callShare(JSON.stringify(get))
+    } else {
+      console.log('titi_js_not_callShare')
+    }
+
+  }
+
+  // 下载包
+  function callAPKPackger(path_url, package_name) {
+    //包标记 {"path_url":下载url,"package_name":apk包名}
+    //返回PackageInfo apk安装信息 false 返回空对象
+    var get = {
+      path_url: path_url,
+      package_name: package_name,
+    }
+    if (window.titi_js) {
+      var get = JSON.stringify(get);
+      var down = window.titi_js.callAPKPackger(get)
+      console.log('data:' + get + '|downData:' + down)
+      return down
+    } else {
+      console.log('titi_js_not_callAPKPackger')
+      isCarry()
+    }
+
+  }
+
+</script>
+
+</html>
